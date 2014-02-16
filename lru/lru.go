@@ -119,3 +119,15 @@ func (c *Cache) Len() int {
 	}
 	return c.ll.Len()
 }
+
+// Clear clear all items in thee cache, you can use it to flush cache to storage
+func (c *Cache) Clear() {
+	for e := c.ll.Front(); e != nil; e = e.Next() {
+		kv := e.Value.(*entry)
+		if c.OnEvicted != nil {
+			c.OnEvicted(kv.key, kv.value)
+		}
+	}
+	c.ll = list.New()
+	c.cache = make(map[interface{}]*list.Element)
+}
